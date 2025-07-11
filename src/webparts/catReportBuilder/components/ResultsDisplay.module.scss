@@ -1,0 +1,187 @@
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
+.resultsDisplay {
+  .resultsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid $ms-color-neutralLight;
+
+    h3 {
+      margin: 0;
+      color: $ms-color-themePrimary;
+      font-size: 24px;
+    }
+
+    .downloadButton {
+      background: #38a169;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background: #2f855a;
+      }
+    }
+  }
+
+  .drivingPerilSection {
+    margin-bottom: 32px;
+
+    h4 {
+      color: $ms-color-themePrimary;
+      margin-bottom: 16px;
+      font-size: 20px;
+    }
+
+    .metricsTable {
+      margin-bottom: 24px;
+      overflow-x: auto;
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        th {
+          background: $ms-color-themePrimary;
+          color: white;
+          padding: 12px 16px;
+          text-align: left;
+          font-weight: 600;
+        }
+
+        td {
+          padding: 12px 16px;
+          border-bottom: 1px solid $ms-color-neutralLight;
+          color: $ms-color-neutralPrimary;
+
+          &.highChange {
+            color: #e53e3e;
+            font-weight: 600;
+          }
+        }
+
+        tr:last-child td {
+          border-bottom: none;
+        }
+
+        tr:hover {
+          background: $ms-color-neutralLighter;
+        }
+      }
+    }
+
+    .epCurveSection {
+      h5 {
+        color: $ms-color-neutralPrimary;
+        margin-bottom: 16px;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .brokerComparisonSection {
+    margin-bottom: 32px;
+
+    h4 {
+      color: $ms-color-themePrimary;
+      margin-bottom: 16px;
+      font-size: 20px;
+    }
+
+    .brokerComparison {
+      margin-bottom: 24px;
+
+      h5 {
+        color: $ms-color-neutralPrimary;
+        margin-bottom: 12px;
+        font-size: 16px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        th {
+          background: $ms-color-neutralDark;
+          color: white;
+          padding: 12px 16px;
+          text-align: left;
+          font-weight: 600;
+        }
+
+        td {
+          padding: 12px 16px;
+          border-bottom: 1px solid $ms-color-neutralLight;
+          color: $ms-color-neutralPrimary;
+
+          &.highChange {
+            color: #e53e3e;
+            font-weight: 600;
+          }
+        }
+
+        tr:last-child td {
+          border-bottom: none;
+        }
+
+        tr:hover {
+          background: $ms-color-neutralLighter;
+        }
+      }
+    }
+  }
+
+  .summarySection {
+    background: $ms-color-neutralLighter;
+    padding: 20px;
+    border-radius: 8px;
+
+    h4 {
+      color: $ms-color-themePrimary;
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+
+    .summaryGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+
+      .summaryItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+
+        label {
+          font-weight: 600;
+          color: $ms-color-neutralPrimary;
+        }
+
+        span {
+          color: $ms-color-themePrimary;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+} 

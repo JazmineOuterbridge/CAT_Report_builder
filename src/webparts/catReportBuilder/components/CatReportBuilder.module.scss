@@ -1,0 +1,125 @@
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
+.catReportBuilder {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+    
+    h2 {
+      color: $ms-color-themePrimary;
+      margin-bottom: 10px;
+    }
+    
+    p {
+      color: $ms-color-neutralSecondary;
+      font-size: 16px;
+    }
+  }
+
+  .inputSection {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+
+    .databaseInputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .inputGroup {
+      h3 {
+        color: $ms-color-themePrimary;
+        margin-bottom: 16px;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .submitSection {
+    text-align: center;
+    margin-top: 24px;
+
+    .submitButton {
+      background: $ms-color-themePrimary;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background: $ms-color-themeDarkAlt;
+      }
+
+      &:disabled {
+        background: $ms-color-neutralTertiary;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .errorMessage {
+    background: #fde8e8;
+    color: #c53030;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 16px;
+    border-left: 4px solid #c53030;
+  }
+
+  .loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+
+    .loadingSpinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid $ms-color-neutralLight;
+      border-top: 4px solid $ms-color-themePrimary;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: $ms-color-neutralSecondary;
+      font-size: 16px;
+    }
+  }
+
+  .resultsSection {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} 

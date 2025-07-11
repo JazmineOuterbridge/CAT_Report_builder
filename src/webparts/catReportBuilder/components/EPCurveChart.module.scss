@@ -1,0 +1,16 @@
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
+.epCurveChart {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 400px;
+  position: relative;
+
+  canvas {
+    max-height: 100%;
+    width: 100% !important;
+    height: 100% !important;
+  }
+} 

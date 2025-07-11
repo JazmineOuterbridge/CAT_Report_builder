@@ -1,0 +1,22 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "cat-report-builder-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/catReportBuilder/CatReportBuilderWebPart.js",
+          "manifest": "./src/webparts/catReportBuilder/CatReportBuilderWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {
+    "chart.js": "https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js",
+    "react-chartjs-2": "https://cdn.jsdelivr.net/npm/react-chartjs-2@5.2.0/dist/index.min.js",
+    "xlsx": "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
+  },
+  "localizedResources": {
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+  }
+}

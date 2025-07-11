@@ -1,0 +1,48 @@
+{
+  "name": "cat-report-builder",
+  "version": "1.0.0",
+  "description": "SharePoint Framework web part for reinsurance catastrophe analysts",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "gulp build",
+    "clean": "gulp clean",
+    "test": "gulp test",
+    "trust-dev-cert": "gulp trust-dev-cert",
+    "serve": "gulp serve",
+    "bundle": "gulp bundle --ship",
+    "package-solution": "gulp package-solution --ship"
+  },
+  "dependencies": {
+    "@microsoft/sp-core-library": "1.17.4",
+    "@microsoft/sp-lodash-subset": "1.17.4",
+    "@microsoft/sp-office-ui-fabric-core": "1.17.4",
+    "@microsoft/sp-property-pane": "1.17.4",
+    "@microsoft/sp-webpart-base": "1.17.4",
+    "@pnp/sp": "^3.12.0",
+    "@pnp/spfx-controls-react": "^3.12.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "axios": "^1.6.0",
+    "xlsx": "^0.18.5",
+    "chart.js": "^4.4.0",
+    "react-chartjs-2": "^5.2.0"
+  },
+  "devDependencies": {
+    "@microsoft/rush-stack-compiler-4.5": "0.1.0",
+    "@microsoft/sp-build-web": "1.17.4",
+    "@microsoft/sp-module-interfaces": "1.17.4",
+    "@microsoft/sp-tslint-rules": "1.17.4",
+    "@types/react": "17.0.45",
+    "@types/react-dom": "17.0.17",
+    "@types/webpack-env": ">=1.15.2 <1.18",
+    "ajv": "~6.12.5",
+    "gulp": "4.0.2",
+    "typescript": "4.5.5"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "ie 11"
+  ]
+} 

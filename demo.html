@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAT Report Builder - Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>window.Chart = Chart;</script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #0078d4;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .input-section {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .database-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .input-group h3 {
+            color: #0078d4;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .database-input {
+            margin-bottom: 20px;
+        }
+
+        .input-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .input-header h4 {
+            margin: 0;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .required-indicator {
+            color: #e53e3e;
+            margin-left: 4px;
+            font-weight: bold;
+        }
+
+        .database-fields {
+            margin-bottom: 12px;
+        }
+
+        .database-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+
+        .database-input-field {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .database-input-field:focus {
+            outline: none;
+            border-color: #0078d4;
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+        }
+
+        .remove-button {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .add-button {
+            background: transparent;
+            color: #0078d4;
+            border: 1px solid #0078d4;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .add-button:hover {
+            background: #0078d4;
+            color: white;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .submit-button {
+            background: #0078d4;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: #106ebe;
+        }
+
+        .submit-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: #fde8e8;
+            color: #c53030;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 16px;
+            border-left: 4px solid #c53030;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0078d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .results-header h3 {
+            margin: 0;
+            color: #0078d4;
+            font-size: 24px;
+        }
+
+        .download-button {
+            background: #38a169;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .download-button:hover {
+            background: #2f855a;
+        }
+
+        .metrics-table {
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        .metrics-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .metrics-table th {
+            background: #0078d4;
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .metrics-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .metrics-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .metrics-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .high-change {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        .ep-curve-chart {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: 400px;
+            position: relative;
+        }
+
+        .summary-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .summary-section h4 {
+            color: #0078d4;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        .summary-item label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .summary-item span {
+            color: #0078d4;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .database-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Return periods to use for EP curve
+        const RETURN_PERIODS = [10000, 5000, 500, 250, 200, 100, 50, 30, 20, 10, 5, 2];
+
+        // Mock API Service
+        class MockRiskModelerApiService {
+            async getAnalysisData(request) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                const companyCurrentData = this.generateMockDatabaseData(request.companyCurrentYear, 'current');
+                const companyPreviousData = request.companyPreviousYear.length > 0 
+                    ? this.generateMockDatabaseData(request.companyPreviousYear, 'previous')
+                    : null;
+                // Always generate broker data if any broker name is entered
+                const brokerCurrentData = request.brokerCurrentYear.length > 0
+                    ? this.generateMockDatabaseData(request.brokerCurrentYear, 'broker-current')
+                    : null;
+                const brokerPreviousData = request.brokerPreviousYear.length > 0
+                    ? this.generateMockDatabaseData(request.brokerPreviousYear, 'broker-previous')
+                    : null;
+                return this.processAnalysisData(companyCurrentData, companyPreviousData, brokerCurrentData, brokerPreviousData, request);
+            }
+            generateMockDatabaseData(databases, type) {
+                const results = [];
+                databases.forEach((database, index) => {
+                    const baseMultiplier = type.includes('previous') ? 0.9 : 1.0;
+                    const brokerMultiplier = type.includes('broker') ? 0.95 : 1.0;
+                    const finalMultiplier = baseMultiplier * brokerMultiplier;
+                    results.push({
+                        database,
+                        data: {
+                            version: `v6.${Math.floor(Math.random() * 5) + 1}`,
+                            perils: [
+                                {
+                                    name: 'Hurricane',
+                                    aal: 15000000 * finalMultiplier,
+                                    tiv: 500000000 * finalMultiplier,
+                                    epCurve: this.generateMockEPCurve(15000000 * finalMultiplier)
+                                },
+                                {
+                                    name: 'Earthquake',
+                                    aal: 8000000 * finalMultiplier,
+                                    tiv: 300000000 * finalMultiplier,
+                                    epCurve: this.generateMockEPCurve(8000000 * finalMultiplier)
+                                },
+                                {
+                                    name: 'Flood',
+                                    aal: 5000000 * finalMultiplier,
+                                    tiv: 200000000 * finalMultiplier,
+                                    epCurve: this.generateMockEPCurve(5000000 * finalMultiplier)
+                                }
+                            ]
+                        }
+                    });
+                });
+                return results;
+            }
+            generateMockEPCurve(maxLoss) {
+                // For each return period, generate a plausible loss value
+                return RETURN_PERIODS.map(rp => ({
+                    returnPeriod: rp,
+                    lossAmount: Math.round(maxLoss * (1 / Math.log10(rp + 10)) * (0.7 + Math.random() * 0.6))
+                }));
+            }
+            processAnalysisData(companyCurrent, companyPrevious, brokerCurrent, brokerPrevious, request) {
+                const aggregatedCurrent = this.aggregatePerilData(companyCurrent);
+                const aggregatedPrevious = companyPrevious ? this.aggregatePerilData(companyPrevious) : null;
+                const aggregatedBrokerCurrent = brokerCurrent ? this.aggregatePerilData(brokerCurrent) : null;
+                const aggregatedBrokerPrevious = brokerPrevious ? this.aggregatePerilData(brokerPrevious) : null;
+                const drivingPeril = this.findDrivingPeril(aggregatedCurrent);
+                const perils = {};
+                Object.keys(aggregatedCurrent).forEach(perilName => {
+                    const currentData = aggregatedCurrent[perilName];
+                    const previousData = aggregatedPrevious?.[perilName];
+                    const brokerCur = aggregatedBrokerCurrent?.[perilName];
+                    const brokerPrev = aggregatedBrokerPrevious?.[perilName];
+                    perils[perilName] = {
+                        currentYear: currentData,
+                        previousYear: previousData,
+                        percentageChange: previousData ? this.calculatePercentageChange(currentData, previousData) : null,
+                        brokerCurrent: brokerCur,
+                        brokerPrevious: brokerPrev,
+                        brokerPercentageChange: (brokerCur && brokerPrev) ? this.calculatePercentageChange(brokerCur, brokerPrev) : null,
+                        companyVsBroker: (currentData && brokerCur) ? this.calculateCompanyVsBroker(currentData, brokerCur) : null
+                    };
+                });
+                const totalAAL = Object.values(aggregatedCurrent).reduce((sum, peril) => sum + peril.aal, 0);
+                const totalTIV = Object.values(aggregatedCurrent).reduce((sum, peril) => sum + peril.tiv, 0);
+                return {
+                    drivingPeril,
+                    perils,
+                    aggregatedMetrics: {
+                        totalAAL,
+                        totalTIV,
+                        mainDrivingFactor: drivingPeril
+                    },
+                    databaseInfo: {
+                        currentYear: request.companyCurrentYear,
+                        previousYear: request.companyPreviousYear.length > 0 ? request.companyPreviousYear : undefined,
+                        versions: {}
+                    },
+                    notes: {
+                        mainDrivingPeril: drivingPeril,
+                        aalPercentageChange: perils[drivingPeril].percentageChange?.aal || 0,
+                        exposureChangeAnalysis: 'Mock exposure change analysis',
+                        reinsuranceDetails: 'Mock reinsurance details'
+                    }
+                };
+            }
+            aggregatePerilData(databases) {
+                const aggregated = {};
+                databases.forEach(db => {
+                    db.data.perils.forEach(peril => {
+                        if (!aggregated[peril.name]) {
+                            aggregated[peril.name] = {
+                                perilName: peril.name,
+                                epCurve: peril.epCurve,
+                                aal: 0,
+                                tiv: 0,
+                                databaseVersion: db.data.version
+                            };
+                        }
+                        aggregated[peril.name].aal += peril.aal;
+                        aggregated[peril.name].tiv += peril.tiv;
+                        // For demo, just use the first db's curve
+                        aggregated[peril.name].epCurve = peril.epCurve;
+                    });
+                });
+                return aggregated;
+            }
+            findDrivingPeril(aggregatedData) {
+                let maxAAL = 0;
+                let drivingPeril = '';
+                Object.entries(aggregatedData).forEach(([perilName, perilData]) => {
+                    if (perilData.aal > maxAAL) {
+                        maxAAL = perilData.aal;
+                        drivingPeril = perilName;
+                    }
+                });
+                return drivingPeril;
+            }
+            calculatePercentageChange(current, previous) {
+                // For AAL, TIV, and EP curve
+                const epCurveChange = current.epCurve.map((point, idx) => {
+                    const prev = previous.epCurve[idx];
+                    return {
+                        returnPeriod: point.returnPeriod,
+                        percent: prev ? ((point.lossAmount - prev.lossAmount) / prev.lossAmount) * 100 : 0
+                    };
+                });
+                return {
+                    aal: ((current.aal - previous.aal) / previous.aal) * 100,
+                    tiv: ((current.tiv - previous.tiv) / previous.tiv) * 100,
+                    epCurve: epCurveChange
+                };
+            }
+            calculateCompanyVsBroker(company, broker) {
+                const epCurveChange = company.epCurve.map((point, idx) => {
+                    const brokerPt = broker.epCurve[idx];
+                    return {
+                        returnPeriod: point.returnPeriod,
+                        percent: brokerPt ? ((point.lossAmount - brokerPt.lossAmount) / brokerPt.lossAmount) * 100 : 0
+                    };
+                });
+                return {
+                    aal: ((company.aal - broker.aal) / broker.aal) * 100,
+                    tiv: ((company.tiv - broker.tiv) / broker.tiv) * 100,
+                    epCurve: epCurveChange
+                };
+            }
+        }
+
+        // Database Input Component
+        const DatabaseInput = ({ title, databases, onChange, onAdd, onRemove, required }) => {
+            return (
+                <div className="database-input">
+                    <div className="input-header">
+                        <h4>{title}</h4>
+                        {required && <span className="required-indicator">*</span>}
+                    </div>
+                    
+                    <div className="database-fields">
+                        {databases.map((database, index) => (
+                            <div key={index} className="database-field">
+                                <input
+                                    type="text"
+                                    value={database}
+                                    onChange={(e) => onChange(index, e.target.value)}
+                                    placeholder="Enter database name"
+                                    className="database-input-field"
+                                />
+                                {databases.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => onRemove(index)}
+                                        className="remove-button"
+                                        title="Remove database"
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <button
+                        type="button"
+                        onClick={onAdd}
+                        className="add-button"
+                    >
+                        + Add Another Database
+                    </button>
+                </div>
+            );
+        };
+
+        // EP Curve Chart Component
+        const EPCurveChart = ({ currentYearData, previousYearData }) => {
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+
+            useEffect(() => {
+                if (!chartRef.current) return;
+
+                if (chartInstance.current) {
+                    chartInstance.current.destroy();
+                }
+
+                const ctx = chartRef.current.getContext('2d');
+                if (!ctx) return;
+
+                const datasets = [
+                    {
+                        label: 'Current Year',
+                        data: currentYearData.map(point => ({
+                            x: point.returnPeriod,
+                            y: point.lossAmount
+                        })),
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }
+                ];
+
+                if (previousYearData) {
+                    datasets.push({
+                        label: 'Previous Year',
+                        data: previousYearData.map(point => ({
+                            x: point.returnPeriod,
+                            y: point.lossAmount
+                        })),
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.1
+                    });
+                }
+
+                chartInstance.current = new Chart(ctx, {
+                    type: 'line',
+                    data: { datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Exceedance Probability (%)'
+                                },
+                                reverse: true
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Loss Amount ($)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return new Intl.NumberFormat('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD',
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                        }).format(value);
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        }
+                    }
+                });
+
+                return () => {
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                };
+            }, [currentYearData, previousYearData]);
+
+            return (
+                <div className="ep-curve-chart">
+                    <canvas ref={chartRef} height="400"></canvas>
+                </div>
+            );
+        };
+
+        // Results Display Component
+        const ResultsDisplay = ({ results, onDownload }) => {
+            const drivingPerilData = results.perils[results.drivingPeril];
+
+            const formatCurrency = (amount) => {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(amount);
+            };
+
+            const formatPercentage = (value) => {
+                return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+            };
+
+            return (
+                <div className="results-section">
+                    <div className="results-header">
+                        <h3>Analysis Results</h3>
+                        <button 
+                            className="download-button"
+                            onClick={onDownload}
+                        >
+                            Download Excel Report
+                        </button>
+                    </div>
+
+                    <div>
+                        <h4>Driving Peril: {results.drivingPeril}</h4>
+                        
+                        <div className="metrics-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Current Year</th>
+                                        {drivingPerilData.previousYear && <th>Previous Year</th>}
+                                        {drivingPerilData.percentageChange && <th>% Change</th>}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>AAL</td>
+                                        <td>{formatCurrency(drivingPerilData.currentYear.aal)}</td>
+                                        {drivingPerilData.previousYear && (
+                                            <td>{formatCurrency(drivingPerilData.previousYear.aal)}</td>
+                                        )}
+                                        {drivingPerilData.percentageChange && (
+                                            <td className={drivingPerilData.percentageChange.aal >= 10 ? 'high-change' : ''}>
+                                                {formatPercentage(drivingPerilData.percentageChange.aal)}
+                                            </td>
+                                        )}
+                                    </tr>
+                                    <tr>
+                                        <td>TIV</td>
+                                        <td>{formatCurrency(drivingPerilData.currentYear.tiv)}</td>
+                                        {drivingPerilData.previousYear && (
+                                            <td>{formatCurrency(drivingPerilData.previousYear.tiv)}</td>
+                                        )}
+                                        {drivingPerilData.percentageChange && (
+                                            <td className={drivingPerilData.percentageChange.tiv >= 10 ? 'high-change' : ''}>
+                                                {formatPercentage(drivingPerilData.percentageChange.tiv)}
+                                            </td>
+                                        )}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style={{ marginBottom: '24px' }}>
+                            <h5>Exceedance Probability Curve</h5>
+                            <EPCurveChart 
+                                currentYearData={drivingPerilData.currentYear.epCurve}
+                                previousYearData={drivingPerilData.previousYear?.epCurve}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="summary-section">
+                        <h4>Summary</h4>
+                        <div className="summary-grid">
+                            <div className="summary-item">
+                                <label>Total AAL:</label>
+                                <span>{formatCurrency(results.aggregatedMetrics.totalAAL)}</span>
+                            </div>
+                            <div className="summary-item">
+                                <label>Total TIV:</label>
+                                <span>{formatCurrency(results.aggregatedMetrics.totalTIV)}</span>
+                            </div>
+                            <div className="summary-item">
+                                <label>Main Factor:</label>
+                                <span>{results.aggregatedMetrics.mainDrivingFactor}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Excel Generator
+        const ExcelGenerator = {
+            generateExcel(results) {
+                const workbook = XLSX.utils.book_new();
+                const notesData = this.createNotesSheet(results);
+                const notesSheet = XLSX.utils.aoa_to_sheet(notesData);
+                XLSX.utils.book_append_sheet(workbook, notesSheet, 'Notes');
+                const comparisonData = this.createComparisonSheet(results);
+                const comparisonSheet = XLSX.utils.aoa_to_sheet(comparisonData);
+                XLSX.utils.book_append_sheet(workbook, comparisonSheet, 'Data Comparison');
+                const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                const fileName = `Notes_${timestamp}.xlsx`;
+                XLSX.writeFile(workbook, fileName);
+            },
+            createNotesSheet(results) {
+                return [
+                    ['Analysis Notes'],
+                    [''],
+                    ['Main Driving Peril:', results.notes.mainDrivingPeril],
+                    [''],
+                    ['AAL % Change:', `${results.notes.aalPercentageChange >= 0 ? '+' : ''}${results.notes.aalPercentageChange.toFixed(1)}%`],
+                    [''],
+                    ['Exposure Change Analysis:', results.notes.exposureChangeAnalysis],
+                    [''],
+                    ['Database Information:'],
+                    ['Current Year:', results.databaseInfo.currentYear.join(', ')],
+                    ['Previous Year:', results.databaseInfo.previousYear?.join(', ') || 'N/A'],
+                    [''],
+                    ['Reinsurance Details:', results.notes.reinsuranceDetails],
+                    [''],
+                    ['Additional Notes:'],
+                    [''],
+                ];
+            },
+            createComparisonSheet(results) {
+                const data = [
+                    ['Peril Data Comparison'],
+                    ['']
+                ];
+                Object.entries(results.perils).forEach(([perilName, perilData]) => {
+                    // Headers for all three tables
+                    data.push([
+                        `${perilName} - Company Results`, '', '', '', '', '', `${perilName} - Broker Results`, '', '', '', '', '', `${perilName} - Company vs Broker`]);
+                    data.push([
+                        'Return Period (years)', 'Company CY', 'Company PY', '% Change (CY vs PY)', '', '',
+                        'Return Period (years)', 'Broker CY', 'Broker PY', '% Change (CY vs PY)', '', '',
+                        'Return Period (years)', 'Company CY', 'Broker CY', '% Change (Co. vs Broker)']);
+                    for (let i = 0; i < RETURN_PERIODS.length; i++) {
+                        const rp = RETURN_PERIODS[i];
+                        // Company
+                        const coCY = perilData.currentYear.epCurve.find(pt => pt.returnPeriod === rp);
+                        const coPY = perilData.previousYear?.epCurve.find(pt => pt.returnPeriod === rp);
+                        const coCYLoss = coCY ? this.formatCurrency(coCY.lossAmount) : 'N/A';
+                        const coPYLoss = coPY ? this.formatCurrency(coPY.lossAmount) : 'N/A';
+                        let coPct = '';
+                        if (coCY && coPY) {
+                            coPct = this.formatPercentage(((coCY.lossAmount - coPY.lossAmount) / coPY.lossAmount) * 100);
+                        } else {
+                            coPct = 'N/A';
+                        }
+                        // Broker
+                        const brCY = perilData.brokerCurrent?.epCurve.find(pt => pt.returnPeriod === rp);
+                        const brPY = perilData.brokerPrevious?.epCurve.find(pt => pt.returnPeriod === rp);
+                        const brCYLoss = brCY ? this.formatCurrency(brCY.lossAmount) : 'N/A';
+                        const brPYLoss = brPY ? this.formatCurrency(brPY.lossAmount) : 'N/A';
+                        let brPct = '';
+                        if (brCY && brPY) {
+                            brPct = this.formatPercentage(((brCY.lossAmount - brPY.lossAmount) / brPY.lossAmount) * 100);
+                        } else {
+                            brPct = 'N/A';
+                        }
+                        // Company vs Broker
+                        let coVsBrPct = '';
+                        if (coCY && brCY) {
+                            coVsBrPct = this.formatPercentage(((coCY.lossAmount - brCY.lossAmount) / brCY.lossAmount) * 100);
+                        } else {
+                            coVsBrPct = 'N/A';
+                        }
+                        data.push([
+                            rp, coCYLoss, coPYLoss, coPct, '', '',
+                            rp, brCYLoss, brPYLoss, brPct, '', '',
+                            rp, coCYLoss, brCYLoss, coVsBrPct
+                        ]);
+                    }
+                    // Add two blank rows before next peril
+                    data.push(['']);
+                    data.push(['']);
+                });
+                return data;
+            },
+            formatCurrency(amount) {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(amount);
+            },
+            formatPercentage(value) {
+                return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+            }
+        };
+
+        // Main App Component
+        const CatReportBuilder = () => {
+            const [companyCurrentYear, setCompanyCurrentYear] = useState(['']);
+            const [companyPreviousYear, setCompanyPreviousYear] = useState(['']);
+            const [brokerCurrentYear, setBrokerCurrentYear] = useState(['']);
+            const [brokerPreviousYear, setBrokerPreviousYear] = useState(['']);
+            const [isLoading, setIsLoading] = useState(false);
+            const [results, setResults] = useState(null);
+            const [error, setError] = useState(null);
+            const [showResults, setShowResults] = useState(false);
+
+            const apiService = new MockRiskModelerApiService();
+
+            const handleDatabaseChange = (type, index, value) => {
+                const setter = {
+                    'companyCurrentYear': setCompanyCurrentYear,
+                    'companyPreviousYear': setCompanyPreviousYear,
+                    'brokerCurrentYear': setBrokerCurrentYear,
+                    'brokerPreviousYear': setBrokerPreviousYear
+                }[type];
+
+                setter(prev => {
+                    const newState = [...prev];
+                    newState[index] = value;
+                    return newState;
+                });
+            };
+
+            const handleAddDatabase = (type) => {
+                const setter = {
+                    'companyCurrentYear': setCompanyCurrentYear,
+                    'companyPreviousYear': setCompanyPreviousYear,
+                    'brokerCurrentYear': setBrokerCurrentYear,
+                    'brokerPreviousYear': setBrokerPreviousYear
+                }[type];
+
+                setter(prev => [...prev, '']);
+            };
+
+            const handleRemoveDatabase = (type, index) => {
+                const setter = {
+                    'companyCurrentYear': setCompanyCurrentYear,
+                    'companyPreviousYear': setCompanyPreviousYear,
+                    'brokerCurrentYear': setBrokerCurrentYear,
+                    'brokerPreviousYear': setBrokerPreviousYear
+                }[type];
+
+                setter(prev => prev.filter((_, i) => i !== index));
+            };
+
+            const handleSubmit = async () => {
+                const currentYearDatabases = companyCurrentYear.filter(db => db.trim() !== '');
+                if (currentYearDatabases.length === 0) {
+                    setError('At least one current year company database is required.');
+                    return;
+                }
+
+                setIsLoading(true);
+                setError(null);
+                setShowResults(false);
+
+                try {
+                    const results = await apiService.getAnalysisData({
+                        companyCurrentYear: currentYearDatabases,
+                        companyPreviousYear: companyPreviousYear.filter(db => db.trim() !== ''),
+                        brokerCurrentYear: brokerCurrentYear.filter(db => db.trim() !== ''),
+                        brokerPreviousYear: brokerPreviousYear.filter(db => db.trim() !== '')
+                    });
+
+                    setResults(results);
+                    setIsLoading(false);
+                    setShowResults(true);
+                } catch (error) {
+                    setError(error.message || 'An error occurred while fetching data.');
+                    setIsLoading(false);
+                }
+            };
+
+            const handleDownloadExcel = () => {
+                if (results) {
+                    ExcelGenerator.generateExcel(results);
+                }
+            };
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>CAT Report Builder</h1>
+                        <p>Generate catastrophe analysis reports from Moody's RiskModeler data</p>
+                    </div>
+
+                    {!showResults && (
+                        <div className="input-section">
+                            <div className="database-inputs">
+                                <div className="input-group">
+                                    <h3>Company Databases</h3>
+                                    <DatabaseInput
+                                        title="Current Year"
+                                        databases={companyCurrentYear}
+                                        onChange={(index, value) => handleDatabaseChange('companyCurrentYear', index, value)}
+                                        onAdd={() => handleAddDatabase('companyCurrentYear')}
+                                        onRemove={(index) => handleRemoveDatabase('companyCurrentYear', index)}
+                                        required={true}
+                                    />
+                                    <DatabaseInput
+                                        title="Previous Year (Optional)"
+                                        databases={companyPreviousYear}
+                                        onChange={(index, value) => handleDatabaseChange('companyPreviousYear', index, value)}
+                                        onAdd={() => handleAddDatabase('companyPreviousYear')}
+                                        onRemove={(index) => handleRemoveDatabase('companyPreviousYear', index)}
+                                        required={false}
+                                    />
+                                </div>
+
+                                <div className="input-group">
+                                    <h3>Broker Databases</h3>
+                                    <DatabaseInput
+                                        title="Current Year (Optional)"
+                                        databases={brokerCurrentYear}
+                                        onChange={(index, value) => handleDatabaseChange('brokerCurrentYear', index, value)}
+                                        onAdd={() => handleAddDatabase('brokerCurrentYear')}
+                                        onRemove={(index) => handleRemoveDatabase('brokerCurrentYear', index)}
+                                        required={false}
+                                    />
+                                    <DatabaseInput
+                                        title="Previous Year (Optional)"
+                                        databases={brokerPreviousYear}
+                                        onChange={(index, value) => handleDatabaseChange('brokerPreviousYear', index, value)}
+                                        onAdd={() => handleAddDatabase('brokerPreviousYear')}
+                                        onRemove={(index) => handleRemoveDatabase('brokerPreviousYear', index)}
+                                        required={false}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="submit-section">
+                                <button 
+                                    className="submit-button"
+                                    onClick={handleSubmit}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? 'Processing...' : 'Submit'}
+                                </button>
+                            </div>
+
+                            {error && (
+                                <div className="error-message">
+                                    {error}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {showResults && results && (
+                        <ResultsDisplay 
+                            results={results}
+                            onDownload={handleDownloadExcel}
+                        />
+                    )}
+
+                    {isLoading && (
+                        <div className="loading-overlay">
+                            <div className="loading-spinner"></div>
+                            <p>Fetching data from Moody's RiskModeler API...</p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Render the app
+        ReactDOM.render(<CatReportBuilder />, document.getElementById('root'));
+    </script>
+</body>
+</html> 

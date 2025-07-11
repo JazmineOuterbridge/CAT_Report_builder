@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "cat-report-builder-web-part",
+  "alias": "CatReportBuilderWebPart",
+  "componentType": "WebPart",
+  "version": "1.0.0",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": {
+        "default": "Other"
+      },
+      "title": {
+        "default": "CAT Report Builder"
+      },
+      "description": {
+        "default": "Reinsurance catastrophe analysis tool for Moody's RiskModeler data"
+      },
+      "officeFabricIconFontName": "Page",
+      "properties": {
+        "apiEndpoint": "https://api.riskmodeler.moodys.com",
+        "apiVersion": "v6"
+      }
+    }
+  ]
+} 
